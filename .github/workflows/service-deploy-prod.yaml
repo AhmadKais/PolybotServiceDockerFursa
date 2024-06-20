@@ -82,7 +82,7 @@ jobs:
             POLYBOT_IMG_NAME=${{ secrets.DOCKERHUB_USERNAME }}/polybot:${{ github.run_number }}
             YOLO5_IMG_NAME=${{ secrets.DOCKERHUB_USERNAME }}/yolo5:${{ github.run_number }}
             BUCKET_NAME=kais-image-bucket
-            MONGO_URI=mongodb://mongo1:27017,mongo2:27017,mongo3:27017/?replicaSet=myReplicaSet
+            MONGO_URI=mongodb://mongo1:27017/
             TELEGRAM_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
             TELEGRAM_APP_URL=${{ env.BOT_INSTANCE_DOMAIN }}:8443
             S3_BUCKET=kais-image-bucket
