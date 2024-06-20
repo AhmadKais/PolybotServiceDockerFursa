@@ -1,73 +1,78 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mongo1:
     image: mongo:5
-    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo1
+    container_name: mongo1
+    command: ["mongod", "--replSet", "myReplicaSet", "--bind_ip", "localhost,mongo1"]
+    restart: always
     ports:
-      - "27017:27017"
+      - 27017:27017
     networks:
       - mongoCluster
     volumes:
-      - ${MONGO1_DATA_DIR}:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      - mongo1-data:/data/db
 
   mongo2:
     image: mongo:5
-    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo2
+    container_name: mongo2
+    command: ["mongod", "--replSet", "myReplicaSet", "--bind_ip", "localhost,mongo2"]
+    restart: always
     ports:
-      - "27018:27017"
+      - 27018:27017
     networks:
       - mongoCluster
     volumes:
-      - ${MONGO2_DATA_DIR}:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      - mongo2-data:/data/db
 
   mongo3:
     image: mongo:5
-    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo3
+    container_name: mongo3
+    command: ["mongod", "--replSet", "myReplicaSet", "--bind_ip", "localhost,mongo3"]
+    restart: always
     ports:
-      - "27019:27017"
+      - 27019:27017
     networks:
       - mongoCluster
     volumes:
-      - ${MONGO3_DATA_DIR}:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      - mongo3-data:/data/db
 
   flask-predict-app:
-    image: ahmadkais/flask-predict-app:0.0.7
+    image: ${YOLO5_IMG_NAME}
+    container_name: flask-predict-app
+    restart: always
     ports:
-      - "8081:8081"
-    networks:
-      - mongoCluster
-    environment:
-      - BUCKET_NAME=${BUCKET_NAME}
-      - MONGO_URI=${MONGO_URI}
+      - 8081:8081
     volumes:
       - $HOME/.aws:/root/.aws
-
-  polybot:
-    image: ahmadkais/polybot:0.0.3
-    ports:
-      - "8443:8443"
+    environment:
+      BUCKET_NAME: ${BUCKET_NAME} 
+      MONGO_URI: ${MONGO_URI}
     networks:
       - mongoCluster
-    environment:
-      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
-      - TELEGRAM_APP_URL=${TELEGRAM_APP_URL}
-      - S3_BUCKET=${S3_BUCKET}
-      - YOLO_SERVICE_URL=${YOLO_SERVICE_URL}
+
+  polybot:
+    image: ${POLYBOT_IMG_NAME}
+    container_name: polybot
+    restart: always
+    ports:
+      - 8443:8443
     volumes:
       - /home/ubuntu/YOURPUBLIC.pem:/app/YOURPUBLIC.pem
       - /home/ubuntu/YOURPRIVATE.key:/app/YOURPRIVATE.key
       - $HOME/.aws:/root/.aws
+    environment:
+      TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
+      TELEGRAM_APP_URL: ${TELEGRAM_APP_URL}
+      S3_BUCKET: ${S3_BUCKET}
+      YOLO_SERVICE_URL: ${YOLO_SERVICE_URL}
+    networks:
+      - mongoCluster
 
 networks:
   mongoCluster:
     driver: bridge
+volumes:
+  mongo1-data:
+  mongo2-data:
+  mongo3-data:
