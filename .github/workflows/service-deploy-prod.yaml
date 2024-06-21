@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  BOT_INSTANCE_DOMAIN: dev-bot.kaisfursa.click  # TODO replace to your bot domain
+  BOT_INSTANCE_DOMAIN: dev-bot.kaisfursa.click  # TODO replace to your botdomain
 
 jobs:
   PolybotBuild:
